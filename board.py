@@ -24,7 +24,6 @@ class Board:
         """
         Generates the content of the board
         args:
-
         :return:
         """
         self.open.append(initial_selection)
@@ -88,18 +87,62 @@ class Board:
         self.pick_and_display(initial_selection)
 
     def pick_and_display(self, selection):
+
+        ruler = [x + 1 for x in range(self.size)]
+        ruler_str = " ".join(str(x) for x in ruler)
+
         # game over scenario
         if self.board[selection[0]][selection[1]] == "x":
             print("GAME OVER")
-            for row in self.board:
+            print("   ", end="")
+            print(ruler_str)
+            for ir, row in enumerate(self.board):
+                print(str(ir + 1) + "|", end=" ")
                 print(" ".join(str(cell) for cell in row))
             exit(0)
 
         self.open.append((selection[0], selection[1]))
-        # open up the non-bomb cells around the selection
-        ruler = [x + 1 for x in range(self.size)]
+        queue = [selection]
+        visited = []
+        while len(queue) > 0:
+            item = queue[0]
+
+            if item not in visited:
+                # go down
+                if item[0] < self.size - 1:
+                    if self.board[item[0]+1][item[1]] != "x":
+                        self.open.append(((item[0]+1), item[1]))
+                        if self.board[item[0]+1][item[1]] != " ":
+                            visited.append(((item[0]+1), item[1]))
+                        else:
+                            queue.append(((item[0] + 1), item[1]))
+                # go up
+                if item[0] > 0:
+                    if self.board[item[0]-1][item[1]] != "x":
+                        self.open.append(((item[0]-1), item[1]))
+                        if self.board[item[0]-1][item[1]] != " ":
+                            visited.append(((item[0]-1), item[1]))
+                        else:
+                            queue.append(((item[0]-1), item[1]))
+                if item[1] < self.size - 1:
+                    if self.board[item[0]][item[1]+1] != "x":
+                        self.open.append((item[0], (item[1]+1)))
+                        if self.board[item[0]][item[1] + 1] != " ":
+                            visited.append((item[0], (item[1] + 1)))
+                        else:
+                            queue.append((item[0], (item[1] + 1)))
+                if item[1] > 0:
+                    if self.board[item[0]][item[1]-1] != "x":
+                        self.open.append((item[0], (item[1]-1)))
+                        if self.board[item[0]][item[1] - 1] != " ":
+                            visited.append((item[0], (item[1] - 1)))
+                        else:
+                            queue.append((item[0], (item[1] - 1)))
+            visited.append(item)
+            queue.pop(0)
+
         print("   ", end="")
-        print(" ".join(str(x) for x in ruler))
+        print(ruler_str)
         print("  ------------------")
 
         for ir, r in enumerate(self.board):
