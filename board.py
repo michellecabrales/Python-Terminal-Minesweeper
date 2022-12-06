@@ -100,8 +100,9 @@ class Board:
                 print(str(ir + 1) + "|", end=" ")
                 print(" ".join(str(cell) for cell in row))
             exit(0)
+        if (selection[0], selection[1]) not in self.open:
+            self.open.append((selection[0], selection[1]))
 
-        self.open.append((selection[0], selection[1]))
         queue = [selection]
         visited = []
         while len(queue) > 0:
@@ -111,7 +112,8 @@ class Board:
                 # go down
                 if item[0] < self.size - 1:
                     if self.board[item[0]+1][item[1]] != "x":
-                        self.open.append(((item[0]+1), item[1]))
+                        if ((item[0]+1), item[1]) not in self.open:
+                            self.open.append(((item[0]+1), item[1]))
                         if self.board[item[0]+1][item[1]] != " ":
                             visited.append(((item[0]+1), item[1]))
                         else:
@@ -119,21 +121,24 @@ class Board:
                 # go up
                 if item[0] > 0:
                     if self.board[item[0]-1][item[1]] != "x":
-                        self.open.append(((item[0]-1), item[1]))
+                        if ((item[0]-1), item[1]) not in self.open:
+                            self.open.append(((item[0]-1), item[1]))
                         if self.board[item[0]-1][item[1]] != " ":
                             visited.append(((item[0]-1), item[1]))
                         else:
                             queue.append(((item[0]-1), item[1]))
                 if item[1] < self.size - 1:
                     if self.board[item[0]][item[1]+1] != "x":
-                        self.open.append((item[0], (item[1]+1)))
+                        if (item[0], (item[1]+1)) not in self.open:
+                            self.open.append((item[0], (item[1]+1)))
                         if self.board[item[0]][item[1] + 1] != " ":
                             visited.append((item[0], (item[1] + 1)))
                         else:
                             queue.append((item[0], (item[1] + 1)))
                 if item[1] > 0:
                     if self.board[item[0]][item[1]-1] != "x":
-                        self.open.append((item[0], (item[1]-1)))
+                        if (item[0], (item[1]-1)) not in self.open:
+                            self.open.append((item[0], (item[1]-1)))
                         if self.board[item[0]][item[1] - 1] != " ":
                             visited.append((item[0], (item[1] - 1)))
                         else:
@@ -152,3 +157,8 @@ class Board:
                 if (ir, ic) in self.open:
                     row_display[ic] = str(c)
             print(" ".join(row_display))
+
+        winning = (self.size * self.size) - 10
+        if len(self.open) == winning:
+            print("YOU WIN :)")
+            exit(0)
